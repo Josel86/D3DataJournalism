@@ -115,20 +115,30 @@ function renderAxesY(newYScale, yAxis) {
 
 // function used for updating circles group with a transition to
 // new circles
-function renderCirclesX(circlesGroup, newXScale, chosenXaxis) {
+function renderCirclesX(circlesGroup, textGroup, newXScale, chosenXaxis) {
+
   circlesGroup.transition()
     .duration(1000)
     .attr("cx", d => newXScale(d[chosenXAxis]));
+
+  textGroup.transition()
+    .duration(1000)
+    .attr("x", d => newXScale(d[chosenXAxis]));
+
   return circlesGroup;
 }
 
 // function used for updating circles group with a transition to
 // new circles
-function renderCirclesY(circlesGroup, newYScale, chosenYaxis) {
+function renderCirclesY(circlesGroup, textGroup, newYScale, chosenYaxis) {
 
   circlesGroup.transition()
     .duration(1000)
     .attr("cy", d => newYScale(d[chosenYaxis]));
+
+  textGroup.transition()
+  .duration(1000)
+  .attr("y", d => newYScale(d[chosenYaxis]));
 
   return circlesGroup;
 }
@@ -325,8 +335,10 @@ var circlesGroup = chart.selectAll("circle")
 //  .attr("stroke", "teal")
 //  .attr("font-size", "10px")
 //  .text(d => d.abbr);    
-  
-var circlesGroup = chart.selectAll("circle")
+
+var circle = chart.append('g').classed('join', true)
+
+var circlesGroup = circle.selectAll("circle")
     .data(healthdata)
     .enter()
     .append("circle")
@@ -335,12 +347,12 @@ var circlesGroup = chart.selectAll("circle")
     .classed("stateCircle", true)
     .attr("r", 20);
 
- circlesGroup.append('text')
+var textGroup = circle.selectAll('text')
     .data(healthdata)
+    .enter()
+    .append("text")
     .attr('x', d => xLinearScale(d[chosenXAxis]))//positions text towards the left of the center of the circle
     .attr('y', d => yLinearScale(d[chosenYAxis]))
-//    .data(healthdata)
-    .append('text')
     .classed("stateText", true)    
     .attr("stroke", "teal")
     .attr("font-size", "10px")
@@ -474,7 +486,7 @@ var lacksHealthLabel = labelsGroupY.append("text")
         xAxis = renderAxesX(xLinearScale, xAxis);
 
         // updates circles with new x values
-        circlesGroup = renderCirclesX(circlesGroup, xLinearScale, chosenXAxis);
+        circlesGroup = renderCirclesX(circlesGroup, textGroup, xLinearScale, chosenXAxis);
 
         // updates tooltips with new info
         circlesGroup = updateToolTipX(chosenXAxis, circlesGroup, xLinearScale, yLinearScale);
@@ -538,7 +550,7 @@ var lacksHealthLabel = labelsGroupY.append("text")
         yAxis = renderAxesY(yLinearScale, yAxis);
 
         // updates circles with new y values
-        circlesGroup = renderCirclesY(circlesGroup, yLinearScale, chosenYAxis);
+        circlesGroup = renderCirclesY(circlesGroup, textGroup, yLinearScale, chosenYAxis);
 
         // updates tooltips with new info
         circlesGroup = updateToolTipY(chosenYAxis, circlesGroup);
